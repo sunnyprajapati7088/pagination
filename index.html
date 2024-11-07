@@ -4,13 +4,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Pagination Example</title>
+  <title>Dynamic Pagination with Range and Items per Page</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body style="padding: 100px">
-  <H1>Pagination</H1>
-  <div id="item-container"> </div>
+<body>
+  <h1>Pagination</h1>
+  <div id="item-container"></div>
+
+  <!-- Items Per Page Selector -->
+  <div class="items-per-page">
+    <label for="itemsPerPage">Items per page:</label>
+    <select id="itemsPerPage">
+      <option value="5" selected>5</option>
+      <option value="10" >10</option>
+      <option value="20">20</option>
+    </select>
+  </div>
+
   <div class="pagination" id="pagination-container"></div>
   <script src="script.js"></script>
 </body>
