@@ -1,45 +1,72 @@
-// Example data (an array of items)
-const items = [
-  "Item 1", "Item 2", "Item 3", "Item 4", "Item 5",
-  "Item 6", "Item 7", "Item 8", "Item 9", "Item 10",
-    "Item 11", "Item 12", "Item 13", "Item 14", "Item 15",
-  "Item 16", "Item 17", "Item 18", "Item 19", "Item 20"
-];
-
-// Pagination settings
+// Sample data and variables
+const items = Array.from({ length: 100 }, (_, i) => `Product item ${i + 1}`); // 100 sample items
 const itemsPerPage = 5;
+const pageButtonLimit = 8; // Show 5 page buttons at a time
 let currentPage = 1;
-const totalPages = Math.ceil(items.length / itemsPerPage);
 
-// Function to render the items for the current page
-function renderPage() {
-  const start = (currentPage - 1) * itemsPerPage;
+const itemContainer = document.getElementById("item-container");
+const paginationContainer = document.getElementById("pagination-container");
+
+// Function to display items on the current page
+function displayItems(page) {
+  itemContainer.innerHTML = "";
+  const start = (page - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   const pageItems = items.slice(start, end);
 
-  const contentDiv = document.getElementById("content");
-  contentDiv.innerHTML = pageItems.map(item => `<p>${item}</p>`).join("");
-
-  // Update page indicator and button states
-  document.getElementById("pageIndicator").textContent = `Page ${currentPage} of ${totalPages}`;
-  document.getElementById("prevBtn").disabled = currentPage === 1;
-  document.getElementById("nextBtn").disabled = currentPage === totalPages;
+  pageItems.forEach((item) => {
+    const itemElement = document.createElement("div");
+    itemElement.textContent = item;
+    itemContainer.appendChild(itemElement);
+  });
 }
 
-// Functions for navigating pages
-function nextPage() {
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderPage();
+// Function to create pagination buttons
+function setupPagination(totalPages, currentPage) {
+  paginationContainer.innerHTML = "";
+
+  // Calculate the range of pages to display
+  let startPage = Math.max(1, currentPage - Math.floor(pageButtonLimit / 2));
+  let endPage = startPage + pageButtonLimit - 1;
+
+  if (endPage > totalPages) {
+    endPage = totalPages;
+    startPage = Math.max(1, endPage - pageButtonLimit + 1);
   }
-}
 
-function prevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    renderPage();
+  // "Previous" button
+  const prevButton = document.createElement("button");
+  prevButton.textContent = "Previous";
+  prevButton.disabled = currentPage === 1;
+  prevButton.onclick = () => goToPage(currentPage - 1);
+  paginationContainer.appendChild(prevButton);
+
+  // Page number buttons
+  for (let i = startPage; i <= endPage; i++) {
+    const pageButton = document.createElement("button");
+    pageButton.textContent = i;
+    pageButton.classList.toggle("active", i === currentPage);
+    pageButton.onclick = () => goToPage(i);
+    paginationContainer.appendChild(pageButton);
   }
+
+  // "Next" button
+  const nextButton = document.createElement("button");
+  nextButton.textContent = "Next";
+  nextButton.disabled = currentPage === totalPages;
+  nextButton.onclick = () => goToPage(currentPage + 1);
+  paginationContainer.appendChild(nextButton);
 }
 
-// Initial render
-renderPage();
+// Function to go to a specific page and update pagination
+function goToPage(page) {
+  const totalPages = Math.ceil(items.length / itemsPerPage);
+  if (page < 1 || page > totalPages) return;
+
+  currentPage = page;
+  displayItems(currentPage);
+  setupPagination(totalPages, currentPage);
+}
+
+// Initialize the pagination and display the first set of items
+goToPage(1);
